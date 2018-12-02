@@ -1,4 +1,4 @@
-# ubc_lhd2018
+# SenseAI
 <<<COOL AND INTERESTING NAME HERE>>>>>
 
 Project for UBC Local Hack Day 2018 by Megan Chan, David Guo, Nicole Hazel, and Mohamed Yousif.
