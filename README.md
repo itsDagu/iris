@@ -1,5 +1,4 @@
-# SenseAI
-<<<COOL AND INTERESTING NAME HERE>>>>>
+# A(Eye) Caption Generator for Slack
 
 Project for UBC Local Hack Day 2018 by Megan Chan, David Guo, Nicole Hazel, and Mohamed Yousif.
 
