@@ -1,7 +1,7 @@
 import requests
 from urllib.request import urlopen
-import json
 import sys
+from bs4 import BeautifulSoup
 
 # URL for image
 image_url = sys.argv[1]
@@ -21,8 +21,16 @@ vision_base_url = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0
 
 analyze_url = vision_base_url + "analyze"
 
-# Set image_path to the local path of an image that you want to analyze.
-image = urlopen(image_url)
+# take in the URL, and scrape the public URL so that we can open the image
+image_page = urlopen(image_url)
+parsed_page = BeautifulSoup(image_page, 'html.parser')
+public_url = parsed_page.find('a', attrs={'class': 'file_body image_body'})
+string_url = str(public_url)
+split_url = string_url.split('"')
+link = split_url[-2]
+
+# Open the image
+image = urlopen(link)
 
 # Read the image into a byte array
 image_data = image.read()
