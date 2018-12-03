@@ -1,9 +1,5 @@
-# A(Eye) Caption Generator for Slack
+![logo](https://github.com/itsDagu/ubc_lhd2018/blob/master/logo/IRIS-1.jpg)
+# IRIS: A picture is worth a thousand words.
+IRIS is an application for Slack that uses image recognition algorithms to provide users with accurate and detailed descriptions of shared image files in both private and public Slack channels. With the goal of improving accessibility for visually-impaired users in mind, IRIS is intended help identify hard-to-see objects in images and empower users to participate in Slack discussions without missing out on relevant information. 
 
-Project for UBC Local Hack Day 2018 by Megan Chan, David Guo, Nicole Hazel, and Mohamed Yousif.
-
-# Inspiration
-Slack is used widely in workplaces today, 
-
-# The Project 
-We created a Slack app that outputs the alt-text description of any image uploaded into a workspace's channels. 
+IRIS was a project developed for UBC Local Hacks Day 2018 by Megan Chan, David Guo, Nicole Hazel, and Mohamed Yousif. Though the hackathon has ended, this project is still currently being maintained by David.
