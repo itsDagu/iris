@@ -5,6 +5,16 @@ var request = require('request');
 var getImageUrls = require('get-image-urls');
 var textCaption= '';
 
+//Microsoft Azure constants
+const subscriptionKey = process.env.COMPUTER_VISION_TOKEN;
+const uriBase =
+    'https://westcentralus.api.cognitive.microsoft.com/vision/v2.0/analyze';
+const params = {
+    'visualFeatures': 'Description',
+    'details': '',
+    'language': 'en'
+};
+
 // *** Initialize an Express application
 const app = express();
 
@@ -26,9 +36,6 @@ app.get('/', (req, res) => {
 app.use('/slack/events', slackEvents.expressMiddleware());
 
 
-
-
-
 // BEGIN MAIN PROJECT CODE//-----------------------------------------------------------------------------------------------------
 
 // get url from image and send to python script
@@ -41,41 +48,24 @@ slack.files.sharedPublicURL ({
 //retrieve public url from sharedpublic url
 var slackurl = data.file.permalink_public;    
 var publicurl = '';
-    
+  
 getImageUrls(slackurl)
   .then(function(images, publicurl) {
   publicurl = images[0].url;
   console.log(publicurl)
-  return publicurl;
-  return images;
-})
+  
+  const imageUrl = publicurl;
 
-// check publicurl variable as global
-// console.log(publicurl)
-
-// Microsoft Azure
-const subscriptionKey = process.env.COMPUTER_VISION_TOKEN;
-const uriBase =
-    'https://westcentralus.api.cognitive.microsoft.com/vision/v2.0/analyze';
-const imageUrl = 'https://cdn.glitch.com/90a7c687-88f5-4495-b9f3-066f431731c0%2Fimage.png?1543880425614';
-
-// Request parameters.
-const params = {
-    'visualFeatures': 'Description',
-    'details': '',
-    'language': 'en'
-};
-
-const options = {
+  // Request parameters.
+  const options = {
     uri: uriBase,
     qs: params,
     body: '{"url": ' + '"' + imageUrl + '"}',
     headers: {
         'Content-Type': 'application/json',
         'Ocp-Apim-Subscription-Key' : subscriptionKey
-    }
-};
-
+}
+}
 request.post(options, (error, response, body) => {
   if (error) {
     console.log('Error: ', error);
@@ -84,17 +74,20 @@ request.post(options, (error, response, body) => {
   
   //var jsonResponse = JSON.stringify(body, null, '');
   textCaption = JSON.stringify(JSON.parse(body).description.captions[0].text, null, '');
-  console.log(textCaption);
-  return textCaption;
-    })
-    
-  }).finally(function(data) {
-    slack.chat.postMessage({
+  
+  slack.chat.postMessage({
       as_user:false,
       username:'IRIS Bot',
       channel: event.channel_id,
-      text: `Beep boop beep boop. Image contains `+ textCaption,
-    }).catch(console.error);
+      text: `Beep boop beep boop. Image contains `+ textCaption
+      })
+    })})
+
+// check publicurl variable as global
+// console.log(publicurl)
+
+// Microsoft Azure
+
   })
 });
 
