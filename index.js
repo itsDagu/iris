@@ -15,7 +15,6 @@ const slack = new SlackClient(process.env.SLACK_ACCESS_TOKEN);
 const slackEvents = slackEventsApi.createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 
 
-
 // Homepage
 app.get('/', (req, res) => {
   const url = `https://${req.hostname}/slack/events`;
@@ -26,22 +25,39 @@ app.get('/', (req, res) => {
 // *** Plug the event adapter into the express app as middleware ***
 app.use('/slack/events', slackEvents.expressMiddleware());
 
-// *** Attach listeners to the event adapter ***
+
+
+
+
+// BEGIN MAIN PROJECT CODE//-----------------------------------------------------------------------------------------------------
 
 // get url from image and send to python script
 slackEvents.on('file_shared', (event) => {
+  
+slack.files.sharedPublicURL ({
+  file: event.file_id,
+  }).then(function(data){
 
-  slack.files.sharedPublicURL ({
-    file: event.file_id,
-  })
+//retrieve public url from sharedpublic url
+var slackurl = data.file.permalink_public;    
+var publicurl = '';
+    
+getImageUrls(slackurl)
+  .then(function(images, publicurl) {
+  publicurl = images[0].url;
+  console.log(publicurl)
+  return publicurl;
+  return images;
+})
 
-    .then (function(data){
+// check publicurl variable as global
+// console.log(publicurl)
+
 // Microsoft Azure
 const subscriptionKey = process.env.COMPUTER_VISION_TOKEN;
 const uriBase =
     'https://westcentralus.api.cognitive.microsoft.com/vision/v2.0/analyze';
-const imageUrl =
-     'https://files.slack.com/files-pri/TEH8ZF469-FEGDWDF6C/image.png?pub_secret=f3bafabb9e';
+const imageUrl = 'https://cdn.glitch.com/90a7c687-88f5-4495-b9f3-066f431731c0%2Fimage.png?1543880425614';
 
 // Request parameters.
 const params = {
@@ -65,18 +81,24 @@ request.post(options, (error, response, body) => {
     console.log('Error: ', error);
     return;
   }
-  var jsonResponse = JSON.stringify(body, null, '');
+  
+  //var jsonResponse = JSON.stringify(body, null, '');
   textCaption = JSON.stringify(JSON.parse(body).description.captions[0].text, null, '');
   console.log(textCaption);
-})
+  return textCaption;
+    })
+    
+  }).finally(function(data) {
     slack.chat.postMessage({
       as_user:false,
-      username:'A(Eye)',
+      username:'IRIS Bot',
       channel: event.channel_id,
       text: `Beep boop beep boop. Image contains `+ textCaption,
     }).catch(console.error);
   })
 });
+
+// END MAIN PROJECT CODE//-----------------------------------------------------------------------------------------------------
 
 // *** Handle errors ***
 slackEvents.on('error', (error) => {
